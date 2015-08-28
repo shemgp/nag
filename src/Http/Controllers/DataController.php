@@ -13,7 +13,17 @@ class CheckController extends \App\Http\Controllers\Controller
 		// Check if the form request is registered
 		if (!isset( $kernel->formRequests[$request] ))
 		{
-			abort(404, 'The "' . $request . '" request is not registered for validation.');
+			$message = 'The "' . $request . '" request is not registered for validation.';
+
+			// Parsley response
+			if (config('nag.driver') == 'Parsley')
+			{
+				abort(404, $message);
+			}
+
+			// FormValidation response
+			return response()->json(['valid' => false, 'message' => $message]);
+
 		}
 
 		// Load the rules and check if the field has rules
@@ -21,7 +31,17 @@ class CheckController extends \App\Http\Controllers\Controller
 
 		if (!array_key_exists($field, $all_rules))
 		{
-			abort(404, 'There are no rules defined for"' . $field . '"');
+			$message = 'There are no rules defined for"' . $field . '"';
+
+			// Parsley response
+			if (config('nag.driver') == 'Parsley')
+			{
+				abort(404, $message);
+			}
+
+			// FormValidation response
+			return response()->json(['valid' => false, 'message' => $message]);
+
 		}
 
 		$field_rules = $all_rules[$field];
@@ -42,7 +62,16 @@ class CheckController extends \App\Http\Controllers\Controller
 
 		if (count($db_rules) == 0)
 		{
-			abort(404, 'No validation was done');
+			$message = 'No validation was done';
+
+			// Parsley response
+			if (config('nag.driver') == 'Parsley')
+			{
+				abort(404, $message);
+			}
+
+			// FormValidation response
+			return response()->json(['valid' => false, 'message' => $message]);
 		}
 
 		// Validate the value
@@ -50,9 +79,24 @@ class CheckController extends \App\Http\Controllers\Controller
 
 		if ($validator->fails())
 		{
-			abort(404, $validator->messages()->first($field));
+			$message = $validator->messages()->first($field);
+
+			if (config('nag.driver') == 'Parsley')
+			{
+				abort(404, $message);
+			}
+
+			// FormValidation response
+			return response()->json(['valid' => false, 'message' => $message]);
 		}
 
-		return response()->json(['status' => 'ok']);
+		// Parsley response
+		if (config('nag.driver') == 'Parsley')
+		{
+			return response()->json(['status' => 'ok']);
+		}
+
+		// FormValidation response
+		return response()->json(['valid' => true]);
 	}
 }
