@@ -1,9 +1,11 @@
-ValidationUI
+Nag
 ===============
 
-Converts [FormRequest](http://laravel.com/docs/5.0/validation#form-request-validation) rules so you can validate forms in the front-end.
+Sometimes your users need to get nagged when they enter invalid input, I'm here to make it easier for you to do that.
 
-At the time of writing both [Parsley](http://parsleyjs.org/) and [formvalidation.io](http://formvalidation.io/) are supported.
+This package converts [FormRequest](http://laravel.com/docs/5.0/validation#form-request-validation) rules to inline data attributes in your forms.
+
+Both [Parsley](http://parsleyjs.org/) and [formvalidation.io](http://formvalidation.io/) take these data attributes to handle front-end validation.
 
 
 ## Install
@@ -114,7 +116,10 @@ class RegisterUser extends Request {
 
 ```
 
+All that's left for you to do is include the required js files and initialise the validator on the form.
+
 **Note** This requires parsley-remote to be loaded before Parsley
+
 **Note** If no `$kernel_key` is defined the validation rule will be ignored in the front-end
 
 #### Custom routing
