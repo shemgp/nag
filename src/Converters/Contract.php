@@ -184,15 +184,12 @@ abstract class Contract
     public function convertRules($field, $rules)
     {
 
-        $fieldType = $this->getValidationType($rules);
-
-        // May be used with other drivers ?
-        if (ends_with($field, '_confirmation') && (config('nag.driver') == 'Parsley')) {
+        if (ends_with($field, '_confirmation')) {
             return $this->getConfirmationRule($field);
         }
 
         $attrs = [];
-
+        $fieldType = $this->getValidationType($rules);
         $date_format = null;
 
         foreach ($rules as $rule_string) {
