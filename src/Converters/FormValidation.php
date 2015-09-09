@@ -2,302 +2,293 @@
 
 namespace DragonFly\Nag\Converters;
 
-
 class FormValidation extends Contract
 {
 
-	protected function mapRule($field, $rule, $params, $message, $fieldType)
-	{
-		switch ($rule)
-		{
-			case 'accepted':
-			case 'required':
-				return [
-					'data-fv-notempty'         => true,
-					'data-fv-notempty-message' => $message,
-				];
-				break;
+    protected function mapRule($field, $rule, $params, $message, $fieldType)
+    {
+        switch ($rule) {
+            case 'accepted':
+            case 'required':
+                return [
+                    'data-fv-notempty' => true,
+                    'data-fv-notempty-message' => $message,
+                ];
+                break;
 
-			case 'email':
-				return [
-					'data-fv-emailaddress'         => true,
-					'data-fv-emailaddress-message' => $message,
-				];
-				break;
+            case 'email':
+                return [
+                    'data-fv-emailaddress' => true,
+                    'data-fv-emailaddress-message' => $message,
+                ];
+                break;
 
-			case 'min':
-				$message = str_replace(':min', $params[0], $message);
-				if ($fieldType == 'string')
-				{
-					$attributes = [
-						'data-fv-stringlength'         => true,
-						'data-fv-stringlength-min'     => $params[0],
-						'data-fv-stringlength-message' => $message,
-					];
-				}
-				else if ($fieldType == 'numeric')
-				{
-					$attributes = [
-						'data-fv-greaterthan'           => true,
-						'data-fv-greaterthan-value'     => $params[0],
-						'data-fv-greaterthan-inclusive' => true,
-						'data-fv-greaterthan-message'   => $message,
-					];
-				}
+            case 'min':
+                $message = str_replace(':min', $params[0], $message);
+                if ($fieldType == 'string') {
+                    $attributes = [
+                        'data-fv-stringlength' => true,
+                        'data-fv-stringlength-min' => $params[0],
+                        'data-fv-stringlength-message' => $message,
+                    ];
+                } else if ($fieldType == 'numeric') {
+                    $attributes = [
+                        'data-fv-greaterthan' => true,
+                        'data-fv-greaterthan-value' => $params[0],
+                        'data-fv-greaterthan-inclusive' => true,
+                        'data-fv-greaterthan-message' => $message,
+                    ];
+                }
 
-				return $attributes;
-				break;
+                return $attributes;
+                break;
 
-			case 'max':
-				$message = str_replace(':max', $params[0], $message);
-				if ($fieldType == 'string')
-				{
-					$attributes = [
-						'data-fv-stringlength'         => true,
-						'data-fv-stringlength-max'     => $params[0],
-						'data-fv-stringlength-message' => $message,
-					];
-				}
-				else if ($fieldType == 'numeric')
-				{
-					$attributes = [
-						'data-fv-lessthan'           => true,
-						'data-fv-lessthan-value'     => $params[0],
-						'data-fv-lessthan-inclusive' => true,
-						'data-fv-lessthan-message'   => $message,
-					];
-				}
+            case 'max':
+                $message = str_replace(':max', $params[0], $message);
+                if ($fieldType == 'string') {
+                    $attributes = [
+                        'data-fv-stringlength' => true,
+                        'data-fv-stringlength-max' => $params[0],
+                        'data-fv-stringlength-message' => $message,
+                    ];
+                } else if ($fieldType == 'numeric') {
+                    $attributes = [
+                        'data-fv-lessthan' => true,
+                        'data-fv-lessthan-value' => $params[0],
+                        'data-fv-lessthan-inclusive' => true,
+                        'data-fv-lessthan-message' => $message,
+                    ];
+                }
 
-				return $attributes;
-				break;
+                return $attributes;
+                break;
 
-			case 'between':
-				$params = str_replace([':min', ':max'], $params, '[:min,:max]');
-				$message = str_replace([':min', ':max'], $params, $message);
+            case 'between':
+                $params = str_replace([':min', ':max'], $params, '[:min,:max]');
+                $message = str_replace([':min', ':max'], $params, $message);
 
-				if ($fieldType == 'string')
-				{
-					$attributes = [
-						'data-fv-stringlength'         => true,
-						'data-fv-stringlength-min'     => $params[0],
-						'data-fv-stringlength-max'     => $params[1],
-						'data-fv-stringlength-message' => $message,
-					];
-				}
-				else if ($fieldType == 'numeric')
-				{
-					$attributes = [
-						'data-fv-lessthan'              => true,
-						'data-fv-lessthan-value'        => $params[1],
-						'data-fv-lessthan-inclusive'    => true,
-						'data-fv-lessthan-message'      => $message,
-						'data-fv-greaterthan'           => true,
-						'data-fv-greaterthan-value'     => $params[0],
-						'data-fv-greaterthan-inclusive' => true,
-						'data-fv-greaterthan-message'   => $message,
-					];
-				}
+                if ($fieldType == 'string') {
+                    $attributes = [
+                        'data-fv-stringlength' => true,
+                        'data-fv-stringlength-min' => $params[0],
+                        'data-fv-stringlength-max' => $params[1],
+                        'data-fv-stringlength-message' => $message,
+                    ];
+                } else if ($fieldType == 'numeric') {
+                    $attributes = [
+                        'data-fv-lessthan' => true,
+                        'data-fv-lessthan-value' => $params[1],
+                        'data-fv-lessthan-inclusive' => true,
+                        'data-fv-lessthan-message' => $message,
+                        'data-fv-greaterthan' => true,
+                        'data-fv-greaterthan-value' => $params[0],
+                        'data-fv-greaterthan-inclusive' => true,
+                        'data-fv-greaterthan-message' => $message,
+                    ];
+                }
 
-				return $attributes;
-				break;
+                return $attributes;
+                break;
 
-			case 'integer':
-				$attributes = [
-					'data-fv-integer'         => true,
-					'data-fv-integer-message' => $message,
-				];
+            case 'integer':
+                $attributes = [
+                    'data-fv-integer' => true,
+                    'data-fv-integer-message' => $message,
+                ];
 
-				return $attributes;
-				break;
+                return $attributes;
+                break;
 
-			case 'numeric':
-				$attributes = [
-					'data-fv-numeric'         => true,
-					'data-fv-numeric-message' => $message,
-				];
+            case 'numeric':
+                $attributes = [
+                    'data-fv-numeric' => true,
+                    'data-fv-numeric-message' => $message,
+                ];
 
-				return $attributes;
-				break;
+                return $attributes;
+                break;
 
-			case 'url':
-				$attributes = [
-					'data-fv-uri'         => true,
-					'data-fv-uri-message' => $message,
-				];
+            case 'url':
+                $attributes = [
+                    'data-fv-uri' => true,
+                    'data-fv-uri-message' => $message,
+                ];
 
-				return $attributes;
-				break;
+                return $attributes;
+                break;
 
-			case 'alpha_num':
-				$params = '/^\d[a-zа-яё\-\_]+$/i';
+            case 'alpha_num':
+                $params = '/^\d[a-zа-яё\-\_]+$/i';
 
-				$attributes = [
-					'data-fv-regexp'         => true,
-					'data-fv-regexp-regexp'  => $params,
-					'data-fv-regexp-message' => $message,
-				];
+                $attributes = [
+                    'data-fv-regexp' => true,
+                    'data-fv-regexp-regexp' => $params,
+                    'data-fv-regexp-message' => $message,
+                ];
 
-				return $attributes;
-				break;
+                return $attributes;
+                break;
 
-			case 'alpha_dash':
-				$params = '/^\d[a-zа-яё\-\_]+$/i';
+            case 'alpha_dash':
+                $params = '/^\d[a-zа-яё\-\_]+$/i';
 
-				$attributes = [
-					'data-fv-regexp'         => true,
-					'data-fv-regexp-regexp'  => $params,
-					'data-fv-regexp-message' => $message,
-				];
+                $attributes = [
+                    'data-fv-regexp' => true,
+                    'data-fv-regexp-regexp' => $params,
+                    'data-fv-regexp-message' => $message,
+                ];
 
-				return $attributes;
-				break;
+                return $attributes;
+                break;
 
-			case 'alpha':
-				$params = '/^[a-zа-яё]+$/i';
+            case 'alpha':
+                $params = '/^[a-zа-яё]+$/i';
 
-				$attributes = [
-					'data-fv-regexp'         => true,
-					'data-fv-regexp-regexp'  => $params,
-					'data-fv-regexp-message' => $message,
-				];
+                $attributes = [
+                    'data-fv-regexp' => true,
+                    'data-fv-regexp-regexp' => $params,
+                    'data-fv-regexp-message' => $message,
+                ];
 
-				return $attributes;
-				break;
+                return $attributes;
+                break;
 
-			case 'regex':
-				$attributes = [
-					'data-fv-regexp'         => true,
-					'data-fv-regexp-regexp'  => $params,
-					'data-fv-regexp-message' => $message,
-				];
+            case 'regex':
+                $attributes = [
+                    'data-fv-regexp' => true,
+                    'data-fv-regexp-regexp' => $params,
+                    'data-fv-regexp-message' => $message,
+                ];
 
-				return $attributes;
-				break;
+                return $attributes;
+                break;
 
-			case 'confirmed':
-				$params = $field . '_confirmation';
+            case 'confirmed':
+                return[];
+                break;
 
-				$attributes = [
-					'data-fv-identical'         => true,
-					'data-fv-identical-field'   => $params,
-					'data-fv-identical-message' => $message,
-				];
+            case 'same':
 
-				return $attributes;
-				break;
+                $message = str_replace(':other', $params[0], $message);
+                $attributes = [
+                    'data-fv-identical' => true,
+                    'data-fv-identical-field' => $params[0],
+                    'data-fv-identical-message' => $message,
+                ];
 
-			case 'same':
+                return $attributes;
+                break;
+            case 'different':
+                $message = str_replace(':other', $params[0], $message);
+                $attributes = [
+                    'data-fv-different' => true,
+                    'data-fv-different-field' => $params[0],
+                    'data-fv-different-message' => $message,
+                ];
 
-				$message = str_replace(':other', $params[0], $message);
-				$attributes = [
-					'data-fv-identical'         => true,
-					'data-fv-identical-field'   => $params[0],
-					'data-fv-identical-message' => $message,
-				];
+                return $attributes;
+                break;
 
-				return $attributes;
-				break;
-			case 'different':
-				$message = str_replace(':other', $params[0], $message);
-				$attributes = [
-					'data-fv-different'         => true,
-					'data-fv-different-field'   => $params[0],
-					'data-fv-different-message' => $message,
-				];
+            case 'date_format':
+                $replace = [
+                    // Day
+                    'd' => 'DD', 'D' => 'ddd', 'j' => 'D', 'l' => 'DDDD',
+                    'N' => 'E', 'S' => '', 'w' => 'W', 'z' => 'DDD',
+                    // Week
+                    'W' => 'w',
+                    // Month
+                    'F' => 'MMMM', 'm' => 'MM', 'M' => 'MMM', 'n' => 'M', 't' => '',
+                    // Year
+                    'L' => '', 'o' => 'YYYY', 'Y' => 'YYYY', 'y' => 'YY',
+                    // Time
+                    'a' => 'a', 'A' => 'A', 'B' => '', 'g' => 'h', 'G' => 'H',
+                    'h' => 'hh', 'H' => 'HH', 'i' => 'i', 's' => 's', 'u' => '',
+                ];
+                $params = str_replace(array_keys($replace), array_values($replace), $params[0]);
+                $message = str_replace(':format', $params, $message);
 
-				return $attributes;
-				break;
+                $attributes = [
+                    'data-fv-date' => true,
+                    'data-fv-date-format' => $params[0],
+                    'data-fv-date-message' => $message,
+                ];
 
-			case 'date_format':
-				$replace = [
-					// Day
-					'd' => 'DD', 'D' => 'ddd', 'j' => 'D', 'l' => 'DDDD',
-					'N' => 'E', 'S' => '', 'w' => 'W', 'z' => 'DDD',
-					// Week
-					'W' => 'w',
-					// Month
-					'F' => 'MMMM', 'm' => 'MM', 'M' => 'MMM', 'n' => 'M', 't' => '',
-					// Year
-					'L' => '', 'o' => 'YYYY', 'Y' => 'YYYY', 'y' => 'YY',
-					// Time
-					'a' => 'a', 'A' => 'A', 'B' => '', 'g' => 'h', 'G' => 'H',
-					'h' => 'hh', 'H' => 'HH', 'i' => 'i', 's' => 's', 'u' => '',
-				];
-				$params = str_replace(array_keys($replace), array_values($replace), $params[0]);
-				$message = str_replace(':format', $params, $message);
+                return $attributes;
 
-				$attributes = [
-					'data-fv-date'         => true,
-					'data-fv-date-format'  => $params[0],
-					'data-fv-date-message' => $message,
-				];
+                break;
 
-				return $attributes;
+            case 'before':
+            case 'after':
+                $placement = ( $rule == 'before' ) ? 'max' : 'min';
+                $attributes = [
+                    'data-fv-date-' . $placement => $params[0],
+                ];
 
-				break;
+                return $attributes;
+                break;
 
-			case 'before':
-			case 'after':
-				$placement = ( $rule == 'before' ) ? 'max' : 'min';
-				$attributes = [
-					'data-fv-date-' . $placement => $params[0],
-				];
+            case 'in':
+            case 'not_in':
+                $formValidationRule = str_replace('_', '', $rule);
+                $params = implode(',', $params);
 
-				return $attributes;
-				break;
+                $attributes = [
+                    'data-fv-' . $formValidationRule => true,
+                    'data-fv-' . $formValidationRule . '-values' => $params,
+                    'data-fv-' . $formValidationRule . '-message' => str_replace(':attribute', $field, $message),
+                ];
 
-			case 'in':
-			case 'not_in':
-				$formValidationRule = str_replace('_', '', $rule);
-				$params = implode(',', $params);
+                return $attributes;
+                break;
 
-				$attributes = [
-					'data-fv-' . $formValidationRule              => true,
-					'data-fv-' . $formValidationRule . '-values'  => $params,
-					'data-fv-' . $formValidationRule . '-message' => str_replace(':attribute', $field, $message),
-				];
+            case 'exists':
+            case 'unique':
+                $route = $this->formRequest->getRoute();
 
-				return $attributes;
-				break;
+                // Only register if the formRequest was registered in the kernel
+                if ($route !== false) {
+                    $params = route($route, [
+                        'request' => $this->formRequest->kernel_key,
+                        'field' => $field,
+                    ]);
 
-			case 'exists':
-			case 'unique':
-				$route = $this->formRequest->getRoute();
+                    $attributes = [
+                        'data-fv-remote' => true,
+                        'data-fv-remote-url' => $params,
+                        'data-fv-remote-type' => 'GET',
+                        'data-fv-trigger' => 'focus blur',
+                        'data-fv-verbose' => false,
+                    ];
 
-				// Only register if the formRequest was registered in the kernel
-				if ($route !== false)
-				{
-					$params = route($route, [
-						'request' => $this->formRequest->kernel_key,
-						'field'   => $field,
-					]);
+                    return $attributes;
+                }
+                break;
 
-					$attributes = [
-						'data-fv-remote'      => true,
-						'data-fv-remote-url'  => $params,
-						'data-fv-remote-type' => 'GET',
-						'data-fv-trigger'     => 'focus blur',
-						'data-fv-verbose'     => false,
-					];
+            case 'active_url':
+                $attributes = [
+                    'data-fv-activeurl' => true,
+                    'data-fv-trigger' => 'focus blur',
+                    'data-fv-verbose' => false,
+                ];
 
-					return $attributes;
-				}
-				break;
+                return $attributes;
+                break;
 
-			case 'active_url':
-				$attributes = [
-					'data-fv-activeurl' => true,
-					'data-fv-trigger'   => 'focus blur',
-					'data-fv-verbose'   => false,
-				];
+            default:
+                return null;
+                break;
+        }
+    }
 
-				return $attributes;
-				break;
+    protected function confirmationRule($attribute, $message)
+    {
+        $attributes = [
+            'data-fv-identical' => true,
+            'data-fv-identical-field' => $attribute,
+            'data-fv-identical-message' => $message,
+        ];
 
-			default:
-				return null;
-				break;
-		}
+        return $attributes;
+    }
 
-	}
 }
