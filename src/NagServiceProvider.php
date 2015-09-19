@@ -40,7 +40,7 @@ class NagServiceProvider extends HtmlServiceProvider
         });
 
 	    $this->app->bind('ConvertersContract', function($app) {
-		    $class = 'DragonFly\Nag\Converters'.$app['config']->get('nag.driver', 'FormValidation');
+		    $class = 'DragonFly\Nag\Converters\\'.$app['config']->get('nag.driver', 'FormValidation');
 
 		    return new $class;
 	    });
