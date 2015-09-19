@@ -2,17 +2,20 @@
 
 namespace DragonFly\Nag\Converters;
 
+
 use Illuminate\Console\AppNamespaceDetectorTrait;
 
 abstract class Contract
 {
-
     use AppNamespaceDetectorTrait;
 
-    protected $rules = [];
+    protected $rules            = [];
     protected $customAttributes = [];
+
     protected $formRequest = null;
-    public $mapped_ids = [];
+    public    $mapped_ids  = [];
+
+    public $formOptions = [];
 
     public function init($formRequest = null)
     {
@@ -41,6 +44,8 @@ abstract class Contract
 
             $this->formRequest = $formRequest;
         }
+
+        return $this;
     }
 
     /**
@@ -54,18 +59,32 @@ abstract class Contract
     {
         $rules = [];
 
+        if (ends_with($field, '_confirmation')) {
+            return $this->getConfirmationRule($field);
+        }
+
         // If rules were set for this field
-        if (isset($this->rules[$field])) {
+        if (isset( $this->rules[$field] )) {
 
             // Make them array format if they were defined with pipes
             $raw_rules = ( is_array($this->rules[$field]) ) ?
-                    $this->rules[$field] : explode('|', $this->rules[$field]);
+              $this->rules[$field] : explode('|', $this->rules[$field]);
 
             // Convert the rules and add the HTML id
             $rules = array_merge($this->convertRules($field, $raw_rules), ['id' => $this->getHtmlId($field)]);
         }
 
         return $rules;
+    }
+
+    public function getConfirmationRule($field)
+    {
+        $attribute = substr($field, 0, strlen($field) - 13);
+        $rule = "confirmed";
+        $rules = [$rule];
+        $message = $this->getMessage($attribute, $rule, $rules);
+
+        return $this->convertConfirmationRule($field, $attribute, $message);
     }
 
     /**
@@ -93,7 +112,8 @@ abstract class Contract
      */
     public function getHtmlId($field)
     {
-        return ( isset($this->mapped_ids[$field]) ) ? $this->mapped_ids[$field] : $field;
+        return ( isset( $this->mapped_ids[$field] ) )
+          ? $this->mapped_ids[$field] : $field;
     }
 
     /**
@@ -131,7 +151,7 @@ abstract class Contract
      */
     protected function getAttribute($attribute)
     {
-        if (isset($this->customAttributes[$attribute])) {
+        if (isset( $this->customAttributes[$attribute] )) {
             return $this->customAttributes[$attribute];
         }
 
@@ -183,14 +203,11 @@ abstract class Contract
      */
     public function convertRules($field, $rules)
     {
-
-        if (ends_with($field, '_confirmation')) {
-            return $this->getConfirmationRule($field);
-        }
-
         $attrs = [];
-        $fieldType = $this->getValidationType($rules);
+
         $date_format = null;
+
+        $fieldType = $this->getValidationType($rules);
 
         foreach ($rules as $rule_string) {
             // Get the rule's name, parameters & message
@@ -205,31 +222,6 @@ abstract class Contract
 
         return $attrs;
     }
-
-    /**
-     * Return rule for '_confirmation' field
-     * 
-     * @param string $field
-     * @return type
-     */
-    public function getConfirmationRule($field)
-    {
-        $rule = "confirmed";
-        $rules = [$rule];
-        $attribute = substr($field, 0, strlen($field) - 13);
-        $message = $this->getMessage($attribute, $rule, $rules);
-        return $this->confirmationRule($attribute, $message);
-    }
-
-    /**
-     * Return rule for '_confirmation' field for a given driver
-     * 
-     * @param string $attribute The main field name
-     * @param string $message Validation error message
-     * 
-     * @return array
-     */
-    abstract protected function confirmationRule($attribute, $message);
 
     /**
      * Map a rule to the needed format.

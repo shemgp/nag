@@ -8,8 +8,6 @@ namespace DragonFly\Nag;
  */
 trait ValidateFormRequestTrait
 {
-	public $kernel_key = null;
-	public $route      = null;
 
 	/**
 	 * Returns the name of the route, through which the validation request should be sent.
@@ -25,7 +23,12 @@ trait ValidateFormRequestTrait
 			return false;
 		}
 
-		return ( $this->route != null ) ?
+		return ( property_exists($this, 'route') ) ?
 			$this->route : config('validateui.route');
 	}
+
+    public function getKernelKey()
+    {
+        return (property_exists($this, 'kernel_key')) ? $this->kernel_key : false;
+    }
 }

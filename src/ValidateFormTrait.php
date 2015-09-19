@@ -20,6 +20,8 @@ trait ValidateFormTrait
 		$this->reserved[] = 'request';
 		$this->converter = ValidationConverter::init(array_get($options, 'request', null));
 
+        $options = array_merge($this->converter->formOptions, $options);
+
 		return parent::open($options);
 	}
 

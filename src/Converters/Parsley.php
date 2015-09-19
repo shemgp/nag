@@ -2,14 +2,16 @@
 
 namespace DragonFly\Nag\Converters;
 
+
 class Parsley extends Contract
 {
-
     protected $date_format = 'YYYY-MM-DD';
-    protected $trigger = null;
+    protected $trigger     = null;
+    public    $formOptions = ['data-parsley-validate' => 'data-parsley-validate'];
 
     protected function mapRule($field, $rule, $params, $message, $fieldType)
     {
+        $parsleyRule = false;
         switch ($rule) {
             case 'accepted':
             case 'required':
@@ -81,7 +83,8 @@ class Parsley extends Contract
                 break;
 
             case 'confirmed':
-                $message = null;
+                //$parsleyRule = 'equalto';
+                //$params = '#' . $this->getHtmlId($field) . '_confirmation';
                 break;
 
             case 'same':
@@ -95,17 +98,38 @@ class Parsley extends Contract
                 $parsleyRule = 'dateformat';
                 $replace = [
                     // Day
-                    'd' => 'DD', 'D' => 'ddd', 'j' => 'D', 'l' => 'DDDD',
-                    'N' => 'E', 'S' => '', 'w' => 'W', 'z' => 'DDD',
+                    'd' => 'DD',
+                    'D' => 'ddd',
+                    'j' => 'D',
+                    'l' => 'DDDD',
+                    'N' => 'E',
+                    'S' => '',
+                    'w' => 'W',
+                    'z' => 'DDD',
                     // Week
                     'W' => 'w',
                     // Month
-                    'F' => 'MMMM', 'm' => 'MM', 'M' => 'MMM', 'n' => 'M', 't' => '',
+                    'F' => 'MMMM',
+                    'm' => 'MM',
+                    'M' => 'MMM',
+                    'n' => 'M',
+                    't' => '',
                     // Year
-                    'L' => '', 'o' => 'YYYY', 'Y' => 'YYYY', 'y' => 'YY',
+                    'L' => '',
+                    'o' => 'YYYY',
+                    'Y' => 'YYYY',
+                    'y' => 'YY',
                     // Time
-                    'a' => 'a', 'A' => 'A', 'B' => '', 'g' => 'h', 'G' => 'H',
-                    'h' => 'hh', 'H' => 'HH', 'i' => 'i', 's' => 's', 'u' => '',
+                    'a' => 'a',
+                    'A' => 'A',
+                    'B' => '',
+                    'g' => 'h',
+                    'G' => 'H',
+                    'h' => 'hh',
+                    'H' => 'HH',
+                    'i' => 'i',
+                    's' => 's',
+                    'u' => '',
                 ];
                 $params = str_replace(array_keys($replace), array_values($replace), $params[0]);
                 $this->date_format = $params;
@@ -130,13 +154,14 @@ class Parsley extends Contract
             case 'exists':
             case 'unique':
                 $route = $this->formRequest->getRoute();
+                $kernelKey = $this->formRequest->getKernelKey();
 
                 // Only register if the formRequest was registered in the kernel
-                if ($route !== false) {
+                if ($kernelKey !== false) {
                     $parsleyRule = 'remote';
                     $params = route($route, [
-                        'request' => $this->formRequest->kernel_key,
-                        'field' => $field,
+                      'request' => $kernelKey,
+                      'field'   => $field,
                     ]);
                 }
                 break;
@@ -157,14 +182,14 @@ class Parsley extends Contract
 
         $attributes = [];
 
-        if ($message) {
+        if ($message && $parsleyRule) {
             if (is_array($params) && count($params) == 1) {
                 $params = $params[0];
             }
 
             $attributes = [
-                'data-parsley-' . $parsleyRule => $params,
-                'data-parsley-' . $parsleyRule . '-message' => $message,
+              'data-parsley-' . $parsleyRule              => $params,
+              'data-parsley-' . $parsleyRule . '-message' => $message,
             ];
 
             if ($this->trigger != null) {
@@ -175,13 +200,14 @@ class Parsley extends Contract
         return $attributes;
     }
 
-    protected function confirmationRule($attribute, $message)
+    public function convertConfirmationRule($field, $attribute, $message)
     {
-        $attributes = [
-            'data-parsley-equalto' => "#{$attribute}",
-            'data-parsley-equalto-message' => $message
-        ];
-        return $attributes;
-    }
+        $parsleyRule = 'equalto';
 
+        return [
+          'data-parsley-' . $parsleyRule              => '#' . $this->getHtmlId($attribute),
+          'data-parsley-' . $parsleyRule . '-message' => str_replace(':attribute', $this->getAttribute($field),
+            $message),
+        ];
+    }
 }
