@@ -1,6 +1,6 @@
 <?php
 
 Route::get('validate-ui/{request}/{field}', [
-    'uses' => '\DragonFlyAdmin\ValidateUI\Http\Controllers\CheckController@validate',
+    'uses' => '\DragonFly\Nag\Http\Controllers\DataController@validateInput',
     'as' => 'ui.validate'
 ]);

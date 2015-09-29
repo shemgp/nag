@@ -4,14 +4,15 @@ namespace DragonFly\Nag\Http\Controllers;
 
 use Illuminate\Contracts\Http\Kernel;
 use Validator;
+use Input;
 
-class CheckController extends \App\Http\Controllers\Controller
+class DataController extends \App\Http\Controllers\Controller
 {
 
-	public function validate($request, $field, Kernel $kernel)
+	public function validateInput($request, $field, Kernel $kernel)
 	{
 		// Check if the form request is registered
-		if (!isset( $kernel->formRequests[$request] ))
+		if (!isset( $kernel->formRequest[$request] ))
 		{
 			$message = 'The "' . $request . '" request is not registered for validation.';
 
@@ -55,7 +56,7 @@ class CheckController extends \App\Http\Controllers\Controller
 		// Filter for DB validation rules
 		$get_db_rules = function ($rule)
 		{
-			return starts_with($rule, ['unique', 'check']);
+			return starts_with($rule, ['unique', 'exists']);
 		};
 
 		$db_rules = array_filter($field_rules, $get_db_rules);
@@ -74,8 +75,10 @@ class CheckController extends \App\Http\Controllers\Controller
 			return response()->json(['valid' => false, 'message' => $message]);
 		}
 
+        $rules = [$field => implode('|', $db_rules)];
+
 		// Validate the value
-		$validator = Validator::make([$field => Input::get($field)], [$db_rules]);
+		$validator = Validator::make([$field => Input::get($field)], [$rules]);
 
 		if ($validator->fails())
 		{
@@ -93,7 +96,7 @@ class CheckController extends \App\Http\Controllers\Controller
 		// Parsley response
 		if (config('nag.driver') == 'Parsley')
 		{
-			return response()->json(['status' => 'ok']);
+			return response()->json(['status' => 'ok', [Input::get($field), $rules, $field, $validator->fails()]]);
 		}
 
 		// FormValidation response

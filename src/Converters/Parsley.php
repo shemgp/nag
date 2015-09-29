@@ -6,8 +6,8 @@ namespace DragonFly\Nag\Converters;
 class Parsley extends Contract
 {
     protected $date_format = 'YYYY-MM-DD';
-    protected $trigger     = null;
-    public    $formOptions = ['data-parsley-validate' => 'data-parsley-validate'];
+    protected $trigger     = 'focusin focusout';
+    public    $formOptions = ['data-parsley-validate' => null];
 
     protected function mapRule($field, $rule, $params, $message, $fieldType)
     {
