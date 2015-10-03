@@ -3,8 +3,9 @@
 namespace DragonFly\Nag\Http\Controllers;
 
 use Illuminate\Contracts\Http\Kernel;
-use Validator;
-use Input;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Input;
 
 class DataController extends \App\Http\Controllers\Controller
 {
@@ -78,7 +79,7 @@ class DataController extends \App\Http\Controllers\Controller
         $rules = [$field => implode('|', $db_rules)];
 
 		// Validate the value
-		$validator = Validator::make([$field => Input::get($field)], [$rules]);
+		$validator = Validator::make(Input::only($field), $rules);
 
 		if ($validator->fails())
 		{
@@ -96,7 +97,7 @@ class DataController extends \App\Http\Controllers\Controller
 		// Parsley response
 		if (config('nag.driver') == 'Parsley')
 		{
-			return response()->json(['status' => 'ok', [Input::get($field), $rules, $field, $validator->fails()]]);
+			return response()->json(['status' => 'ok', [Input::only($field), $rules, $field, $validator->fails()]]);
 		}
 
 		// FormValidation response
