@@ -20,6 +20,7 @@ class NagServiceProvider extends HtmlServiceProvider
         $this->publishes([
             $config                          => config_path('nag.php'),
             __DIR__ . '/../resources/assets' => public_path('assets/js'),
+            __DIR__ . '/../resources/assets/css' => public_path('assets/css'),
         ]);
 
         $this->mergeConfigFrom($config, 'validateui');
