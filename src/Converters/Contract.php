@@ -17,6 +17,8 @@ abstract class Contract
 
     public $formOptions = [];
 
+    protected $currentLabel = '';
+
     public function init($formRequest = null)
     {
         // If a formRequest was defined as a string
@@ -25,7 +27,6 @@ abstract class Contract
             $class = ( class_exists($formRequest) ) ? $formRequest : $this->getAppNamespace() . 'Http\Requests\\' . $formRequest;
             $formRequest = new $class;
         }
-
 
         if ($formRequest) {
             // Retrieve the rules
@@ -151,6 +152,9 @@ abstract class Contract
      */
     protected function getAttribute($attribute)
     {
+        if (!empty($this->currentLabel))
+            return $this->currentLabel;
+
         if (isset( $this->customAttributes[$attribute] )) {
             return $this->customAttributes[$attribute];
         }
@@ -198,10 +202,11 @@ abstract class Contract
      *
      * @param string $field Name of the field we want to parse the rules for
      * @param array  $rules All the field's rules
+     * @param array  $messages
      *
      * @return array
      */
-    public function convertRules($field, $rules)
+    public function convertRules($field, $rules, $messages = [], $label = null)
     {
         $attrs = [];
 
@@ -209,13 +214,25 @@ abstract class Contract
 
         $fieldType = $this->getValidationType($rules);
 
+        $this->currentLabel = $label;
+
         foreach ($rules as $rule_string) {
             // Get the rule's name, parameters & message
             $parsed = explode(':', $rule_string);
 
             $rule = $parsed[0];
-            $params = ( count($parsed) == 1 ) ? [] : $this->formatParameters($parsed[1]);
-            $message = $this->getMessage($field, $rule, $rules);
+            $params = ( count($parsed) == 1 ) ? '' : $this->formatParameters($parsed[1]);
+            if (isset($messages[$field.'.'.$rule]))
+            {
+                if (!empty($this->currentLabel))
+                    $message = str_replace(':attribute', $label, $messages[$field.'.'.$rule]);
+                else
+                    $message = $messages[$field.'.'.$rule];
+            }
+            else
+            {
+                $message = $this->getMessage($field, $rule, $rules);
+            }
 
             $attrs = array_merge($attrs, $this->mapRule($field, $rule, $params, $message, $fieldType));
         }
