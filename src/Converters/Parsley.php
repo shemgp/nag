@@ -45,9 +45,14 @@ class Parsley extends Contract
                 break;
 
             case 'between':
-                $parsleyRule = 'length';
+                if ($fieldType == 'numeric') {
+                    $parsleyRule = 'range';
+                } else {
+                    $parsleyRule = 'length';
+                }
+                $params_array = $params;
                 $params = str_replace([':min', ':max'], $params, '[:min,:max]');
-                $message = str_replace([':min', ':max'], $params, $message);
+                $message = str_replace([':min', ':max'], $params_array, $message);
                 break;
 
             case 'integer':
